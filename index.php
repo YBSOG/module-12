@@ -93,11 +93,13 @@ function getGenderFromName($fullname) {
 };
 
 #Определение возрастно-полового состава
-function getGenderDescription($array) {
-    function genderCounter ($element) { 
-        return getGenderFromName($element['fullname']);
-    };
+//Вспомогательная функция
+function genderCounter ($element) { 
+    return getGenderFromName($element['fullname']);
+};
 
+//Основная функция
+function getGenderDescription($array) {
     $b = array_map('genderCounter', $array);
     $c = array_count_values($b);
 
@@ -113,22 +115,24 @@ function getGenderDescription($array) {
 };
 
 #Идеальный подбор пары
+//Вспомогательная функция
+function getPartner($array, $userGender) {
+    $partner = $array[rand(0, count($array))]['fullname'];
+
+    if (getGenderFromName($partner) != $userGender) {
+        return $partner;
+    } else {
+        return getPartner($array, $userGender);
+    };
+};
+
+//Основная функция
 function getPerfectPartner($surname, $name, $middleName, $array) {
     $surname = mb_convert_case($surname, MB_CASE_TITLE_SIMPLE);
     $name = mb_convert_case($name, MB_CASE_TITLE_SIMPLE);
     $middleName = mb_convert_case($middleName, MB_CASE_TITLE_SIMPLE);
     $fullname = getFullnameFromParts($surname, $name, $middleName);
     $userGender = getGenderFromName($fullname);
-
-    function getPartner($array, $userGender) {
-        $partner = $array[rand(0, count($array))]['fullname'];
-
-        if (getGenderFromName($partner) != $userGender) {
-            return $partner;
-        } else {
-            return getPartner($array, $userGender);
-        };
-    };
 
     if($userGender != 0) {
         $partner = getShortName(getPartner($array, $userGender));
